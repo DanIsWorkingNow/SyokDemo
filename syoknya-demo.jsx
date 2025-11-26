@@ -165,7 +165,14 @@ export default function SyoknyaDemo() {
 
               <div className="divide-y divide-gray-100">
                 {clients.slice(0, 5).map((client) => (
-                  <div key={client.id} className="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div 
+                    key={client.id} 
+                    onClick={() => {
+                      setSelectedClient(client);
+                      setCurrentPage('clientDetails');
+                    }}
+                    className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4 flex-1">
                         <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
@@ -368,7 +375,13 @@ export default function SyoknyaDemo() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <button className="text-teal-600 hover:text-teal-700 text-sm font-medium">
+                    <button 
+                      onClick={() => {
+                        setSelectedClient(client);
+                        setCurrentPage('clientDetails');
+                      }}
+                      className="text-teal-600 hover:text-teal-700 text-sm font-medium"
+                    >
                       View Details →
                     </button>
                   </td>
@@ -477,6 +490,234 @@ export default function SyoknyaDemo() {
     </div>
   );
 
+  // Client Details & Case Notes Page
+  const ClientDetailsPage = () => {
+    const client = selectedClient || clients[0];
+    
+    const caseNotes = [
+      { id: 1, date: '20 Nov 2025', sessionType: 'Online', duration: '60 min', summary: 'Initial assessment completed. Client expressed concerns about work-related stress...', counselor: 'Dr. Sarah Ahmad', encrypted: true },
+      { id: 2, date: '13 Nov 2025', sessionType: 'In-person', duration: '60 min', summary: 'Follow-up session. Client showing improvement in stress management techniques...', counselor: 'Dr. Sarah Ahmad', encrypted: true },
+      { id: 3, date: '06 Nov 2025', sessionType: 'Online', duration: '45 min', summary: 'Discussed coping strategies and introduced mindfulness exercises...', counselor: 'Dr. Sarah Ahmad', encrypted: true },
+    ];
+
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button onClick={() => setCurrentPage('clients')} className="p-2 hover:bg-gray-100 rounded-lg">
+                ←
+              </button>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">Client Details & Case Notes</h1>
+                <p className="text-sm text-gray-500">{client.name}</p>
+              </div>
+            </div>
+            
+            <button className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-2">
+              <Plus className="w-4 h-4" />
+              <span>New Case Note</span>
+            </button>
+          </div>
+        </header>
+
+        <div className="max-w-7xl mx-auto p-6">
+          {/* Client Info Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-xl">
+                  {client.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900">{client.name}</h2>
+                  <p className="text-gray-500">Client ID: {client.id.toString().padStart(4, '0')}</p>
+                  <div className="flex items-center space-x-4 mt-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      client.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                    }`}>
+                      {client.status}
+                    </span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      client.payment === 'paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                    }`}>
+                      Payment: {client.payment}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-right">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Last Session</p>
+                    <p className="text-lg font-semibold text-gray-900">{client.lastSession}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Next Session</p>
+                    <p className="text-lg font-semibold text-gray-900">{client.nextSession}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Case Notes List */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div className="p-6 border-b border-gray-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900">Case Notes</h2>
+                      <p className="text-sm text-gray-500">Total: {client.caseNotes} encrypted notes</p>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span>AES-256 Encrypted</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="divide-y divide-gray-100">
+                  {caseNotes.map((note) => (
+                    <div key={note.id} className="p-6 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 bg-teal-100 rounded-lg">
+                            <FileText className="w-5 h-5 text-teal-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">Session - {note.date}</h3>
+                            <div className="flex items-center space-x-3 mt-1">
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                note.sessionType === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                              }`}>
+                                {note.sessionType}
+                              </span>
+                              <span className="text-sm text-gray-500">{note.duration}</span>
+                              <span className="text-sm text-gray-500">By: {note.counselor}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {note.encrypted && (
+                          <div className="flex items-center space-x-1 text-green-600 text-xs">
+                            <CheckCircle className="w-3 h-3" />
+                            <span>Encrypted</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <p className="text-gray-700 leading-relaxed mb-3">{note.summary}</p>
+                      
+                      <button className="text-teal-600 hover:text-teal-700 text-sm font-medium">
+                        View Full Note →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Upload New Case Note Section */}
+                <div className="p-6 border-t border-gray-100 bg-gray-50">
+                  <h3 className="font-semibold text-gray-900 mb-4">Add New Case Note</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Session Type</label>
+                        <select className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                          <option>Online Session</option>
+                          <option>In-person Session</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                        <select className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                          <option>30 minutes</option>
+                          <option>45 minutes</option>
+                          <option>60 minutes</option>
+                          <option>90 minutes</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Session Notes</label>
+                      <textarea 
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 min-h-32"
+                        placeholder="Enter session notes here... (Will be encrypted with AES-256)"
+                      ></textarea>
+                    </div>
+
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-teal-500 transition-colors cursor-pointer">
+                      <Plus className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-600 mb-1">Upload Supporting Documents (Optional)</p>
+                      <p className="text-xs text-gray-500">PDF, DOC, DOCX up to 10MB</p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span>Auto-encrypted upon save</span>
+                      </div>
+                      <button className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium">
+                        Save Case Note
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Client Summary Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Session Statistics</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Sessions</span>
+                    <span className="text-lg font-semibold text-gray-900">{client.caseNotes}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Online Sessions</span>
+                    <span className="text-lg font-semibold text-blue-600">8</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">In-person Sessions</span>
+                    <span className="text-lg font-semibold text-purple-600">4</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <span className="text-sm text-gray-600">Avg. Session Duration</span>
+                    <span className="text-lg font-semibold text-gray-900">55 min</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                <div className="space-y-2">
+                  <button className="w-full px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left text-sm">
+                    📅 Schedule Next Session
+                  </button>
+                  <button className="w-full px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left text-sm">
+                    💬 Send Reminder
+                  </button>
+                  <button className="w-full px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left text-sm">
+                    📊 Generate Report
+                  </button>
+                  <button className="w-full px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left text-sm">
+                    📥 Export Case Notes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Render current page
   return (
     <div className="font-sans antialiased">
@@ -515,6 +756,7 @@ export default function SyoknyaDemo() {
       {currentPage === 'dashboard' && <CounselorDashboard />}
       {currentPage === 'clients' && <ClientManagementPage />}
       {currentPage === 'calendar' && <CalendarPage />}
+      {currentPage === 'clientDetails' && <ClientDetailsPage />}
     </div>
   );
 }
