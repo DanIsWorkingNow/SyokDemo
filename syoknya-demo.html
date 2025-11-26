@@ -72,10 +72,12 @@
     const Filter = (props) => <Icon d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" {...props} />;
     const Clock = (props) => <Icon d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2" {...props} />;
     const AlertCircle = (props) => <Icon d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 8v4M12 16h.01" {...props} />;
+    const CheckCircle = (props) => <Icon d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" {...props} />;
 
     function SyoknyaDemo() {
       const [currentPage, setCurrentPage] = useState('login');
       const [userRole, setUserRole] = useState('');
+      const [selectedClient, setSelectedClient] = useState(null);
 
       const clients = [
         { id: 1, name: 'Ahmad bin Abdullah', status: 'active', lastSession: '20 Nov 2025', nextSession: '28 Nov 2025', caseNotes: 12, payment: 'paid' },
