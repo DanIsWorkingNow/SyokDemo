@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, AuthError } from '@supabase/supabase-js';
+import type { AuthError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 // Types matching your database
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function loadUserProfile(authUser: User) {
+  async function loadUserProfile(authUser: any) {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
