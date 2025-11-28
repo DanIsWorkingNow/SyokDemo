@@ -1,4 +1,5 @@
-import { RouterProvider, createRouter, createRootRoute, createRoute, Outlet } from '@tanstack/react-router';
+import { RouterProvider, createRouter, createRootRoute, createRoute, Outlet, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoginPage } from './components/auth/LoginPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -22,10 +23,15 @@ const loginRoute = createRoute({
 
 function LoginRedirect() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   
-  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate({ to: '/dashboard' });
+    }
+  }, [user, navigate]);
+  
   if (user) {
-    window.location.href = '/dashboard';
     return null;
   }
   
@@ -52,6 +58,17 @@ const indexRoute = createRoute({
 
 function IndexRedirect() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        navigate({ to: '/dashboard' });
+      } else {
+        navigate({ to: '/login' });
+      }
+    }
+  }, [user, loading, navigate]);
   
   if (loading) {
     return (
@@ -62,12 +79,6 @@ function IndexRedirect() {
         </div>
       </div>
     );
-  }
-  
-  if (user) {
-    window.location.href = '/dashboard';
-  } else {
-    window.location.href = '/login';
   }
   
   return null;

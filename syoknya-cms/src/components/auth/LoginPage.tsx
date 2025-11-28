@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -7,8 +7,15 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate({ to: '/dashboard' });
+    }
+  }, [user, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,8 +28,8 @@ export function LoginPage() {
       setError(error.message || 'Invalid email or password');
       setIsLoading(false);
     } else {
-      // Navigation will be handled by auth state change
-      navigate({ to: '/dashboard' });
+      // Navigation will be handled by useEffect when user changes
+      setIsLoading(false);
     }
   }
 
@@ -47,7 +54,7 @@ export function LoginPage() {
               <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
             </svg>
           </div>
-          <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Syoknya Kaunseling
           </h1>
           <p className="text-gray-600">Clinic Management System</p>
@@ -56,7 +63,7 @@ export function LoginPage() {
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-serif font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Welcome Back
             </h2>
             <p className="text-gray-600">Sign in to access your dashboard</p>
